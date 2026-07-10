@@ -7,6 +7,7 @@ __pycache__/
 
 # Data - raw videos (large, personal, shouldn't live in git)
 data/raw/
+data/raw_self/
 
 # OS junk
 .DS_Store
