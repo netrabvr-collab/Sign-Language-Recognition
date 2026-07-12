@@ -17,3 +17,6 @@ Thumbs.db
 .vscode/
 .idea/
 wlasl_source/
+
+data/processed/
+data/processed_self/
