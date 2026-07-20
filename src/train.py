@@ -11,11 +11,11 @@ from dataset import SignLanguageDataset, build_label_mapping
 #Config
 SPLIT_JSON = 'data/splits/split.json' 
 BATCH_SIZE = 16
-NUM_EPOCHS = 30
+NUM_EPOCHS = 60
 LEARNING_RATE = 0.001
-HIDDEN_SIZE = 128
-NUM_LAYERS = 2
-DROPOUT = 0.3
+HIDDEN_SIZE = 64
+NUM_LAYERS = 1
+DROPOUT = 0.4
 MODEL_SAVE_PATH = 'models/best_model.pt'
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -43,7 +43,7 @@ model = SignLSTM(
 ).to(device)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 
 
 def run_epoch(loader, training=True):
@@ -80,6 +80,8 @@ def run_epoch(loader, training=True):
 if __name__ == "__main__":
     os.makedirs("models",exist_ok = True)
     best_val_acc = 0.0
+    epochs_without_improvement = 0
+    PATIENCE = 8
 
     for epoch in range(1, NUM_EPOCHS + 1):
         train_loss, train_acc = run_epoch(train_loader, training=True)
@@ -91,6 +93,7 @@ if __name__ == "__main__":
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
+            epochs_without_improvement = 0
             torch.save({
                 "model_state_dict": model.state_dict(),
                 "label_to_idx": label_to_idx,
@@ -98,5 +101,13 @@ if __name__ == "__main__":
                 "val_acc": val_acc,
             }, MODEL_SAVE_PATH)
             print(f"  -> New best model saved (val_acc: {val_acc:.4f})")
+        
+        else:
+            epochs_without_improvement += 1
+        
+        if epochs_without_improvement >= PATIENCE:
+            print(f"\nEarly stopping : no improvement for {PATIENCE} epochs")
+            break
+
 
     print(f"\nTraining complete. Best val accuracy: {best_val_acc:.4f}")
