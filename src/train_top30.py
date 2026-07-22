@@ -9,14 +9,14 @@ from dataset import SignLanguageDataset, build_label_mapping
 
 
 #Config
-SPLIT_JSON = 'data/splits/split.json' 
+SPLIT_JSON = 'data/splits/split_top30.json' 
 BATCH_SIZE = 16
 NUM_EPOCHS = 60
 LEARNING_RATE = 0.001
 HIDDEN_SIZE = 64
 NUM_LAYERS = 1
 DROPOUT = 0.4
-MODEL_SAVE_PATH = 'models/best_model.pt'
+MODEL_SAVE_PATH = 'models/best_model_top30.pt'
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device : {device}")
